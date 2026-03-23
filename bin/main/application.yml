@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: this-easy-news
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/this_easy_news
+    username: ${db.username}
+    password: ${db.password}
+    driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      connection-timeout: 30000
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        default_batch_fetch_size: 100
+        globally_quoted_identifiers: true
+    show-sql: false
+    open-in-view: false
+    
+
+  data:
+    redis:
+      host: ${redis.host}
+      port: ${redis.port}
+      password: ${redis.password}
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 8
+          max-idle: 8
+          min-idle: 2
+
+  config:
+    import: classpath:application-secret.yml
+
+server:
+  port: 8080
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+
+logging:
+  level:
+    com.thiseasynews: INFO
+    org.hibernate.SQL: DEBUG
+
+app:
+  cache:
+    hot-keywords-ttl: 600
+    briefing-ttl: 1800
+    article-list-ttl: 300
+    code-list-ttl: 3600
