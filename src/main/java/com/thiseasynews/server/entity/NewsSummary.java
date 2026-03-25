@@ -13,48 +13,51 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "NEWS_SUMMARY",
-       indexes = @Index(name = "idx_summary_type_date", columnList = "SUMMARY_TYPE, TARGET_DATE"))
+@Table(name = "news_summary",
+       indexes = @Index(name = "idx_summary_type_date", columnList = "summary_type, target_date"))
 public class NewsSummary extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     /** 'GENERAL' | 'BRIEFING' */
-    @Column(name = "SUMMARY_TYPE", nullable = false, length = 50)
+    @Column(name = "summary_type", nullable = false, length = 50)
     private String summaryType;
 
-    @Column(name = "TITLE", nullable = false, length = 1000)
+    @Column(name = "title", nullable = false, length = 1000)
     private String title;
 
-    @Column(name = "SUMMARY_CONTENT", nullable = false, columnDefinition = "TEXT")
+    @Column(name = "summary_content", nullable = false, columnDefinition = "TEXT")
     private String summaryContent;
 
-    @Column(name = "INSIGHT", columnDefinition = "TEXT")
+    @Column(name = "insight", columnDefinition = "TEXT")
     private String insight;
 
-    @Column(name = "AI_MODEL", length = 50)
+    @Column(name = "ai_model", length = 50)
     private String aiModel;
 
-    @Column(name = "TOP_IMAGE_URL", length = 5000)
+    @Column(name = "top_image_url", length = 5000)
     private String topImageUrl;
 
-    @Column(name = "VIEW_COUNT")
+    @Column(name = "view_count")
     private Integer viewCount = 0;
 
-    /** 브리핑 날짜 식별용 (BRIEFING 타입에서 사용) */
-    @Column(name = "TARGET_DATE")
+    @Column(name = "target_date")
     private LocalDate targetDate;
 
-    @Column(name = "STATUS_CODE", nullable = false, length = 50)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "article_id")
+    private Article article;
+
+    @Column(name = "status_code", nullable = false, length = 50)
     private String statusCode;
 
-    @Column(name = "START_DATE")
+    @Column(name = "start_date")
     private LocalDateTime startDate;
 
-    @Column(name = "END_DATE")
+    @Column(name = "end_date")
     private LocalDateTime endDate;
 
     /** BRIEFING 타입일 때 연관된 GENERAL 요약들 */
@@ -65,7 +68,6 @@ public class NewsSummary extends BaseTimeEntity {
     @OneToMany(mappedBy = "summary", fetch = FetchType.LAZY)
     private List<SummaryKeyword> summaryKeywords = new ArrayList<>();
 
-    // ── 도메인 메서드 ───────────────────────────────
     public void incrementViewCount() {
         this.viewCount = (this.viewCount == null ? 0 : this.viewCount) + 1;
     }

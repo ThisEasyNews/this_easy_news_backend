@@ -23,8 +23,8 @@ public class ArticleSearchRequest {
     @Schema(description = "카테고리 ID (예: CAT_POLITICS)", example = "CAT_POLITICS")
     private String categoryId;
 
-    @Schema(description = "키워드 ID (예: KW_AI)", example = "KW_AI")
-    private String keywordId;
+    @Schema(description = "키워드 ID")
+    private Integer keywordId;
 
     @Min(0)
     @Schema(description = "페이지 번호 (0부터)", defaultValue = "0")
@@ -34,7 +34,4 @@ public class ArticleSearchRequest {
     @Schema(description = "페이지 크기 (최대 20)", defaultValue = "20")
     private int size = 20;
 
-    public Object getMediaId() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
 }

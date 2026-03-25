@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface NewsKeywordRepository extends JpaRepository<NewsKeyword, String> {
+public interface NewsKeywordRepository extends JpaRepository<NewsKeyword, Integer> {
 
-    Optional<NewsKeyword> findByIdAndStatusCode(String id, String statusCode);
+    Optional<NewsKeyword> findByIdAndStatusCode(Integer id, String statusCode);
 }

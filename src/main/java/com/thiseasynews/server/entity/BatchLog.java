@@ -11,44 +11,43 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "BATCH_LOG")
+@Table(name = "batch_log")
 public class BatchLog extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     /** 예: 'RSS_CRAWLING', 'GPT_SUMMARY', 'DAILY_BRIEFING' */
-    @Column(name = "JOB_NAME", nullable = false, length = 100)
+    @Column(name = "job_name", nullable = false, length = 100)
     private String jobName;
 
-    @Column(name = "START_TIME", nullable = false)
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
-    @Column(name = "END_TIME")
+    @Column(name = "end_time")
     private LocalDateTime endTime;
 
     /** 'RUNNING' | 'SUCCESS' | 'PARTIAL_SUCCESS' | 'FAIL' */
-    @Column(name = "STATUS_CODE", nullable = false, length = 20)
+    @Column(name = "status_code", nullable = false, length = 20)
     private String statusCode;
 
-    @Column(name = "TOTAL_COUNT")
+    @Column(name = "total_count")
     private Integer totalCount;
 
-    @Column(name = "SUCCESS_COUNT")
+    @Column(name = "success_count")
     private Integer successCount;
 
-    @Column(name = "FAIL_COUNT")
+    @Column(name = "fail_count")
     private Integer failCount;
 
-    @Column(name = "ERROR_MESSAGE", columnDefinition = "TEXT")
+    @Column(name = "error_message", columnDefinition = "TEXT")
     private String errorMessage;
 
-    @Column(name = "EXECUTION_TIME_SEC")
+    @Column(name = "execution_time_sec")
     private Integer executionTimeSec;
 
-    // ── 팩토리 메서드 ────────────────────────────────
     public static BatchLog startJob(String jobName) {
         return BatchLog.builder()
                 .jobName(jobName)
@@ -60,7 +59,6 @@ public class BatchLog extends BaseTimeEntity {
                 .build();
     }
 
-    // ── 상태 변경 (변경 감지) ────────────────────────
     public void complete(int total, int success, int fail) {
         this.endTime          = LocalDateTime.now();
         this.totalCount       = total;

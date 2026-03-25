@@ -10,29 +10,29 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "COMMON_DETAIL")
+@Table(name = "common_detail")
 public class CommonDetail extends BaseTimeEntity {
 
     @Id
-    @Column(name = "ID", length = 50)
+    @Column(name = "id", length = 50)
     private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "GROUP_ID", nullable = false)
+    @JoinColumn(name = "group_id", nullable = false)
     private CommonGroup group;
 
-    @Column(name = "NAME", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "CODE_VALUE", length = 5000)
+    @Column(name = "code_value", length = 5000)
     private String codeValue;
 
-    @Column(name = "STATUS_CODE", nullable = false, length = 50)
+    @Column(name = "status_code", nullable = false, length = 50)
     private String statusCode;
 
-    @Column(name = "START_DATE")
+    @Column(name = "start_date")
     private LocalDateTime startDate;
 
-    @Column(name = "END_DATE")
+    @Column(name = "end_date")
     private LocalDateTime endDate;
 }

@@ -1,8 +1,14 @@
 package com.thiseasynews.server.global.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CachingConfigurer;
 import org.springframework.cache.annotation.EnableCaching;
+import org.springframework.cache.interceptor.CacheErrorHandler;
+import org.springframework.lang.NonNull;
+import org.springframework.lang.Nullable;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
@@ -17,9 +23,10 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+@Slf4j
 @EnableCaching
 @Configuration
-public class RedisConfig {
+public class RedisConfig implements CachingConfigurer {
 
     @Value("${app.cache.hot-keywords-ttl:600}")
     private long hotKeywordsTtl;
@@ -72,5 +79,28 @@ public class RedisConfig {
                 .cacheDefaults(base)
                 .withInitialCacheConfigurations(configs)
                 .build();
+    }
+
+    // ── Redis 연결 실패 시 예외 대신 캐시 우회 ────────
+    @Override
+    public CacheErrorHandler errorHandler() {
+        return new CacheErrorHandler() {
+            @Override
+            public void handleCacheGetError(@NonNull RuntimeException e, @NonNull Cache cache, @NonNull Object key) {
+                log.warn("[Cache] GET 실패 (우회) cache={} key={} error={}", cache.getName(), key, e.getMessage());
+            }
+            @Override
+            public void handleCachePutError(@NonNull RuntimeException e, @NonNull Cache cache, @NonNull Object key, @Nullable Object value) {
+                log.warn("[Cache] PUT 실패 (우회) cache={} key={} error={}", cache.getName(), key, e.getMessage());
+            }
+            @Override
+            public void handleCacheEvictError(@NonNull RuntimeException e, @NonNull Cache cache, @NonNull Object key) {
+                log.warn("[Cache] EVICT 실패 (우회) cache={} key={} error={}", cache.getName(), key, e.getMessage());
+            }
+            @Override
+            public void handleCacheClearError(@NonNull RuntimeException e, @NonNull Cache cache) {
+                log.warn("[Cache] CLEAR 실패 (우회) cache={} error={}", cache.getName(), e.getMessage());
+            }
+        };
     }
 }

@@ -12,23 +12,23 @@ import java.util.List;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "COMMON_GROUP")
+@Table(name = "common_group")
 public class CommonGroup extends BaseTimeEntity {
 
     @Id
-    @Column(name = "ID", length = 50)
+    @Column(name = "id", length = 50)
     private String id;
 
-    @Column(name = "NAME", nullable = false, length = 50)
+    @Column(name = "name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "STATUS_CODE", nullable = false, length = 50)
+    @Column(name = "status_code", nullable = false, length = 50)
     private String statusCode;
 
-    @Column(name = "START_DATE")
+    @Column(name = "start_date")
     private LocalDateTime startDate;
 
-    @Column(name = "END_DATE")
+    @Column(name = "end_date")
     private LocalDateTime endDate;
 
     @OneToMany(mappedBy = "group", fetch = FetchType.LAZY)

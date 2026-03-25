@@ -47,35 +47,24 @@ public class NewsService {
     }
 
     // ── 키워드별 기사 목록 ────────────────────────────
-    public PageResponse<NewsResponse> getArticlesByKeyword(String keywordId, int page, int size) {
+    public PageResponse<NewsResponse> getArticlesByKeyword(Integer keywordId, int page, int size) {
         Specification<Article> spec = ArticleSpecification.published()
                 .and(ArticleSpecification.byKeyword(keywordId));
         return fetchPage(spec, page, size);
     }
 
-    /**
-     * 복합 조건 기사 목록 (ArticleSearchRequest 기반)
-     * mediaId / categoryId / keywordId 중 입력된 조건을 동적으로 AND 조합
-     */
+    // ── 복합 검색 (Specification 동적 조합) ──────────
     public PageResponse<NewsResponse> searchArticles(ArticleSearchRequest req) {
         Specification<Article> spec = ArticleSpecification.published();
 
-        // 1. MediaId 체크 (Object -> String 변환)
-        String mediaId = (req.getMediaId() != null) ? String.valueOf(req.getMediaId()) : null;
-        if (mediaId != null && !mediaId.isBlank()) {
-            spec = spec.and(ArticleSpecification.byMedia(mediaId));
+        if (req.getMediaId() != null && !req.getMediaId().isBlank()) {
+            spec = spec.and(ArticleSpecification.byMedia(req.getMediaId()));
         }
-
-        // 2. CategoryId 체크 (Object -> String 변환)
-        String categoryId = (req.getCategoryId() != null) ? String.valueOf(req.getCategoryId()) : null;
-        if (categoryId != null && !categoryId.isBlank()) {
-            spec = spec.and(ArticleSpecification.byCategory(categoryId));
+        if (req.getCategoryId() != null && !req.getCategoryId().isBlank()) {
+            spec = spec.and(ArticleSpecification.byCategory(req.getCategoryId()));
         }
-
-        // 3. KeywordId 체크 (Object -> String 변환)
-        String keywordId = (req.getKeywordId() != null) ? String.valueOf(req.getKeywordId()) : null;
-        if (keywordId != null && !keywordId.isBlank()) {
-            spec = spec.and(ArticleSpecification.byKeyword(keywordId));
+        if (req.getKeywordId() != null) {
+            spec = spec.and(ArticleSpecification.byKeyword(req.getKeywordId()));
         }
 
         return fetchPage(spec, req.getPage(), req.getSize());

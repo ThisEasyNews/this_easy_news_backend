@@ -24,40 +24,37 @@ public class SummaryService {
     private final NewsSummaryRepository newsSummaryRepository;
 
     // ── 오늘의 브리핑 ─────────────────────────────────
-    /**
-     * 오늘 날짜 기준 브리핑 조회
-     * Redis 캐시(30분) 적용 - 배치 완료 후 evictTodayBriefing() 호출로 갱신
-     */
     @Cacheable(value = RedisConfig.CACHE_TODAY_BRIEFING, key = "'today'")
     public BriefingResponse getTodayBriefing() {
-        return getBriefingByDate(LocalDate.now());
+        LocalDate today = LocalDate.now();
+        NewsSummary briefing = newsSummaryRepository.findBriefingByTargetDate(today)
+                .stream().findFirst()
+                .orElseThrow(() -> new BusinessException(ErrorCode.BRIEFING_NOT_READY));
+        return BriefingResponse.from(briefing);
     }
 
     // ── 날짜별 브리핑 ─────────────────────────────────
     public BriefingResponse getBriefingByDate(LocalDate date) {
         NewsSummary briefing = newsSummaryRepository.findBriefingByTargetDate(date)
+                .stream().findFirst()
                 .orElseThrow(() -> new BusinessException(
                         date.equals(LocalDate.now())
                                 ? ErrorCode.BRIEFING_NOT_READY
                                 : ErrorCode.BRIEFING_NOT_FOUND));
-        return BriefingResponse.ofSimple(briefing);
+        return BriefingResponse.from(briefing);
     }
 
     // ── 브리핑 상세 ───────────────────────────────────
-    /**
-     * 브리핑 상세 + 연관 GENERAL 요약 목록 반환
-     * Redis 캐시(30분) 적용, 조회수 증가 처리
-     */
     @Cacheable(value = RedisConfig.CACHE_BRIEFING_DETAIL, key = "#id")
     @Transactional
     public BriefingResponse getBriefingDetail(Long id) {
         NewsSummary briefing = newsSummaryRepository.findBriefingDetailById(id)
+                .stream().findFirst()
                 .orElseThrow(() -> new BusinessException(ErrorCode.BRIEFING_NOT_FOUND));
 
-        // 캐시 미스(최초 조회) 시에만 실행 → 정밀한 카운트가 필요하면 별도 Redis counter 사용 고려
         newsSummaryRepository.incrementViewCount(id);
 
-        return BriefingResponse.ofDetail(briefing);
+        return BriefingResponse.from(briefing);
     }
 
     // ── 캐시 무효화 (배치 완료 후 호출) ─────────────────

@@ -8,19 +8,19 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "SUMMARY_KEYWORD")
+@Table(name = "summary_keyword")
 public class SummaryKeyword extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SUMMARY_ID", nullable = false)
+    @JoinColumn(name = "summary_id", nullable = false)
     private NewsSummary summary;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "KEYWORD_ID", nullable = false)
+    @JoinColumn(name = "keyword_id", nullable = false)
     private NewsKeyword keyword;
 }

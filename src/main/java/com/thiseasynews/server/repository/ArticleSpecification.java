@@ -41,7 +41,7 @@ public final class ArticleSpecification {
      * 특정 키워드와 연관된 기사 필터
      * ARTICLE → NEWS_SUMMARY → SUMMARY_KEYWORD → NEWS_KEYWORD 경로로 서브쿼리
      */
-    public static Specification<Article> byKeyword(String keywordId) {
+    public static Specification<Article> byKeyword(Integer keywordId) {
         return (root, query, cb) -> {
             // 중복 제거 (SUMMARY_KEYWORD가 여러 개일 때 기사 중복 방지)
             query.distinct(true);

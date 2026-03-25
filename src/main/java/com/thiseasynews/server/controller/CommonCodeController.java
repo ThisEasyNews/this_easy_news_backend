@@ -1,6 +1,8 @@
 package com.thiseasynews.server.controller;
 
+import com.thiseasynews.server.dto.response.CategoryResponse;
 import com.thiseasynews.server.dto.response.CodeResponse;
+import com.thiseasynews.server.dto.response.PublisherResponse;
 import com.thiseasynews.server.global.common.ApiResponse;
 import com.thiseasynews.server.service.CommonCodeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -26,7 +28,7 @@ public class CommonCodeController {
             description = "등록된 언론사 전체 목록을 반환합니다. Redis 캐시(1시간) 적용."
     )
     @GetMapping("/media")
-    public ResponseEntity<ApiResponse<List<CodeResponse>>> getMediaList() {
+    public ResponseEntity<ApiResponse<List<PublisherResponse>>> getMediaList() {
         return ResponseEntity.ok(ApiResponse.ok(commonCodeService.getMediaList()));
     }
 
@@ -36,7 +38,7 @@ public class CommonCodeController {
             description = "등록된 카테고리 전체 목록을 반환합니다. Redis 캐시(1시간) 적용."
     )
     @GetMapping("/categories")
-    public ResponseEntity<ApiResponse<List<CodeResponse>>> getCategoryList() {
+    public ResponseEntity<ApiResponse<List<CategoryResponse>>> getCategoryList() {
         return ResponseEntity.ok(ApiResponse.ok(commonCodeService.getCategoryList()));
     }
 

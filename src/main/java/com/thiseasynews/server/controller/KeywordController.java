@@ -55,10 +55,9 @@ public class KeywordController {
     )
     @GetMapping("/{keywordId}/articles")
     public ResponseEntity<ApiResponse<PageResponse<NewsResponse>>> getArticlesByKeyword(
-            @Parameter(description = "키워드 ID (예: KW_AI)") @PathVariable String keywordId,
+            @Parameter(description = "키워드 ID") @PathVariable Integer keywordId,
             @Parameter(description = "페이지 번호 (0부터)") @RequestParam(defaultValue = "0") int page,
             @Parameter(description = "페이지 크기 (최대 20)")  @RequestParam(defaultValue = "20") int size) {
-        // 키워드 존재 여부 사전 검증
         keywordService.getKeywordOrThrow(keywordId);
         return ResponseEntity.ok(ApiResponse.ok(newsService.getArticlesByKeyword(keywordId, page, size)));
     }

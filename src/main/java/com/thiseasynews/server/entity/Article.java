@@ -10,55 +10,64 @@ import java.time.LocalDateTime;
 @Getter
 @NoArgsConstructor
 @Entity
-@Table(name = "ARTICLE",
+@Table(name = "article",
        indexes = {
-           @Index(name = "idx_article_published_at", columnList = "PUBLISHED_AT DESC"),
-           @Index(name = "idx_article_media_id",     columnList = "MEDIA_ID"),
-           @Index(name = "idx_article_category_id",  columnList = "CATEGORY_ID")
+           @Index(name = "idx_article_published_at", columnList = "published_at DESC"),
+           @Index(name = "idx_article_media_id",     columnList = "media_id"),
+           @Index(name = "idx_article_category_id",  columnList = "category_id")
        })
 public class Article extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ID")
+    @Column(name = "id")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SUMMARY_ID")
+    @JoinColumn(name = "summary_id")
     private NewsSummary summary;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEDIA_ID")
+    @JoinColumn(name = "media_id")
     private CommonDetail media;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CATEGORY_ID")
+    @JoinColumn(name = "category_id")
     private CommonDetail category;
 
-    @Column(name = "ORIGINAL_TITLE", nullable = false, length = 1000)
+    @Column(name = "original_title", nullable = false, length = 1000)
     private String originalTitle;
 
-    @Column(name = "URL", nullable = false, unique = true, length = 5000)
+    @Column(name = "url", nullable = false, unique = true, length = 5000)
     private String url;
 
-    @Column(name = "CONTENT", columnDefinition = "TEXT")
-    private String content;
+    @Column(name = "feedparser_content", columnDefinition = "TEXT")
+    private String feedparserContent;
 
-    @Column(name = "PUBLISHED_AT")
+    @Column(name = "crawler_content", columnDefinition = "TEXT")
+    private String crawlerContent;
+
+    @Column(name = "description", columnDefinition = "TEXT")
+    private String description;
+
+    @Column(name = "image_url", length = 5000)
+    private String imageUrl;
+
+    @Column(name = "published_at")
     private LocalDateTime publishedAt;
 
-    @Column(name = "SCRAPED_AT")
+    @Column(name = "scraped_at")
     private LocalDateTime scrapedAt;
 
-    @Column(name = "IS_SUMMARIZED")
+    @Column(name = "is_summarized")
     private Boolean isSummarized = false;
 
-    @Column(name = "STATUS_CODE", nullable = false, length = 50)
+    @Column(name = "status_code", nullable = false, length = 50)
     private String statusCode;
 
-    @Column(name = "START_DATE")
+    @Column(name = "start_date")
     private LocalDateTime startDate;
 
-    @Column(name = "END_DATE")
+    @Column(name = "end_date")
     private LocalDateTime endDate;
 }
