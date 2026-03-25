@@ -35,7 +35,7 @@ class NewsControllerTest {
     void getArticle_200() throws Exception {
         NewsResponse response = NewsResponse.builder()
                 .id(1L)
-                .originalTitle("AI 기사 제목")
+                .title("AI 기사 제목")
                 .url("https://example.com/1")
                 .content("기사 본문")
                 .mediaName("조선일보")
@@ -48,7 +48,7 @@ class NewsControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
                 .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.originalTitle").value("AI 기사 제목"))
+                .andExpect(jsonPath("$.data.title").value("AI 기사 제목"))
                 .andExpect(jsonPath("$.data.content").value("기사 본문"));
     }
 
@@ -68,8 +68,8 @@ class NewsControllerTest {
     @DisplayName("GET /api/news/media/{mediaId} - 언론사별 기사 목록 200")
     void getArticlesByMedia_200() throws Exception {
         List<NewsResponse> items = List.of(
-                NewsResponse.builder().id(1L).originalTitle("기사1").mediaName("조선일보").build(),
-                NewsResponse.builder().id(2L).originalTitle("기사2").mediaName("조선일보").build()
+                NewsResponse.builder().id(1L).title("기사1").mediaName("조선일보").build(),
+                NewsResponse.builder().id(2L).title("기사2").mediaName("조선일보").build()
         );
         PageResponse<NewsResponse> page = PageResponse.of(
                 new PageImpl<>(items));
@@ -89,7 +89,7 @@ class NewsControllerTest {
     @DisplayName("GET /api/news/category/{categoryId} - 카테고리별 기사 목록 200")
     void getArticlesByCategory_200() throws Exception {
         PageResponse<NewsResponse> page = PageResponse.of(new PageImpl<>(
-                List.of(NewsResponse.builder().id(1L).originalTitle("경제 기사").build())
+                List.of(NewsResponse.builder().id(1L).title("경제 기사").build())
         ));
         given(newsService.getArticlesByCategory("CAT_ECONOMY", 0, 20)).willReturn(page);
 

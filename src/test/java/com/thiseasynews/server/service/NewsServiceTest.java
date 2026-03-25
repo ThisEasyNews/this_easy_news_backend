@@ -46,9 +46,9 @@ class NewsServiceTest {
         NewsResponse result = newsService.getArticle(1L);
 
         assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getOriginalTitle()).isEqualTo("AI 기사 제목");
+        assertThat(result.getTitle()).isEqualTo("AI 기사 제목");
         assertThat(result.getMediaName()).isEqualTo("조선일보");
-        assertThat(result.getContent()).isEqualTo("기사 본문"); // ofDetail → content 포함
+        assertThat(result.getContent()).isEqualTo("기사 본문");
     }
 
     @Test
@@ -96,7 +96,7 @@ class NewsServiceTest {
         given(articleRepository.findAll(any(Specification.class), any(Pageable.class)))
                 .willReturn(new PageImpl<>(List.of(makeArticle(1L, "AI 기사", "MED_CHOSUN", "조선일보"))));
 
-        PageResponse<NewsResponse> result = newsService.getArticlesByKeyword("KW_AI", 0, 20);
+        PageResponse<NewsResponse> result = newsService.getArticlesByKeyword(1, 0, 20);
 
         assertThat(result.getContent()).hasSize(1);
     }
@@ -113,7 +113,7 @@ class NewsServiceTest {
             ArgumentMatchers.<Pageable>argThat(p -> p != null && p.getPageSize() == 20)
         );
     }
-    
+
 
     // ── 헬퍼 ──────────────────────────────────────────
     private Article makeArticle(Long id, String title, String mediaId, String mediaName) {
@@ -123,15 +123,15 @@ class NewsServiceTest {
         ReflectionTestUtils.setField(media, "statusCode", "PUBLISHED");
 
         Article article = new Article();
-        ReflectionTestUtils.setField(article, "id",            id);
-        ReflectionTestUtils.setField(article, "originalTitle", title);
-        ReflectionTestUtils.setField(article, "url",           "https://example.com/" + id);
-        ReflectionTestUtils.setField(article, "content",       "기사 본문");
-        ReflectionTestUtils.setField(article, "publishedAt",   LocalDateTime.now());
-        ReflectionTestUtils.setField(article, "media",         media);
-        ReflectionTestUtils.setField(article, "category",      null);
-        ReflectionTestUtils.setField(article, "summary",       null);
-        ReflectionTestUtils.setField(article, "statusCode",    "PUBLISHED");
+        ReflectionTestUtils.setField(article, "id",             id);
+        ReflectionTestUtils.setField(article, "originalTitle",  title);
+        ReflectionTestUtils.setField(article, "url",            "https://example.com/" + id);
+        ReflectionTestUtils.setField(article, "crawlerContent", "기사 본문");
+        ReflectionTestUtils.setField(article, "publishedAt",    LocalDateTime.now());
+        ReflectionTestUtils.setField(article, "media",          media);
+        ReflectionTestUtils.setField(article, "category",       null);
+        ReflectionTestUtils.setField(article, "summary",        null);
+        ReflectionTestUtils.setField(article, "statusCode",     "PUBLISHED");
         return article;
     }
 }

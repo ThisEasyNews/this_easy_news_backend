@@ -5,6 +5,7 @@ import com.thiseasynews.server.entity.KeywordLog;
 import com.thiseasynews.server.entity.NewsKeyword;
 import com.thiseasynews.server.global.exception.BusinessException;
 import com.thiseasynews.server.global.exception.ErrorCode;
+import com.thiseasynews.server.repository.ArticleRepository;
 import com.thiseasynews.server.repository.KeywordLogRepository;
 import com.thiseasynews.server.repository.NewsKeywordRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -35,25 +36,29 @@ class KeywordServiceTest {
     @Mock
     private NewsKeywordRepository newsKeywordRepository;
 
+    @Mock
+    private ArticleRepository articleRepository;
+
     @Test
-    @DisplayName("핫 키워드 조회 시 1번부터 순위가 부여된다")
-    void getHotKeywords_rankAssigned() {
+    @DisplayName("핫 키워드 조회 시 키워드 목록 반환")
+    void getHotKeywords_success() {
         List<KeywordLog> logs = List.of(
-                makeLog("KW_AI",      "AI",   320),
-                makeLog("KW_ECONOMY", "경제", 280),
-                makeLog("KW_STOCK",   "주식", 200)
+                makeLog(1, "AI",   320),
+                makeLog(2, "경제", 280),
+                makeLog(3, "주식", 200)
         );
         given(keywordLogRepository.findTopByTargetDate(any(LocalDate.class), any()))
                 .willReturn(logs);
+        given(articleRepository.findTopByKeywordId(anyInt(), any()))
+                .willReturn(List.of());
 
         List<KeywordResponse> result = keywordService.getHotKeywords();
 
         assertThat(result).hasSize(3);
-        assertThat(result.get(0).getRank()).isEqualTo(1);
         assertThat(result.get(0).getKeyword()).isEqualTo("AI");
         assertThat(result.get(0).getMentionCount()).isEqualTo(320);
-        assertThat(result.get(1).getRank()).isEqualTo(2);
-        assertThat(result.get(2).getRank()).isEqualTo(3);
+        assertThat(result.get(1).getKeyword()).isEqualTo("경제");
+        assertThat(result.get(2).getKeyword()).isEqualTo("주식");
     }
 
     @Test
@@ -70,11 +75,11 @@ class KeywordServiceTest {
     @Test
     @DisplayName("존재하는 키워드 ID 검증 성공")
     void getKeywordOrThrow_success() {
-        NewsKeyword kw = makeKeyword("KW_AI", "AI");
-        given(newsKeywordRepository.findByIdAndStatusCode("KW_AI", "PUBLISHED"))
+        NewsKeyword kw = makeKeyword(1, "AI");
+        given(newsKeywordRepository.findByIdAndStatusCode(1, "PUBLISHED"))
                 .willReturn(Optional.of(kw));
 
-        NewsKeyword result = keywordService.getKeywordOrThrow("KW_AI");
+        NewsKeyword result = keywordService.getKeywordOrThrow(1);
 
         assertThat(result.getKeyword()).isEqualTo("AI");
     }
@@ -82,17 +87,17 @@ class KeywordServiceTest {
     @Test
     @DisplayName("없는 키워드 ID 검증 시 KEYWORD_NOT_FOUND 예외")
     void getKeywordOrThrow_notFound() {
-        given(newsKeywordRepository.findByIdAndStatusCode(anyString(), anyString()))
+        given(newsKeywordRepository.findByIdAndStatusCode(anyInt(), anyString()))
                 .willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> keywordService.getKeywordOrThrow("INVALID"))
+        assertThatThrownBy(() -> keywordService.getKeywordOrThrow(999))
                 .isInstanceOf(BusinessException.class)
                 .satisfies(e -> assertThat(((BusinessException) e).getErrorCode())
                         .isEqualTo(ErrorCode.KEYWORD_NOT_FOUND));
     }
 
     // ── 헬퍼 ──────────────────────────────────────────
-    private NewsKeyword makeKeyword(String id, String keyword) {
+    private NewsKeyword makeKeyword(Integer id, String keyword) {
         NewsKeyword kw = new NewsKeyword();
         ReflectionTestUtils.setField(kw, "id",         id);
         ReflectionTestUtils.setField(kw, "keyword",    keyword);
@@ -100,7 +105,7 @@ class KeywordServiceTest {
         return kw;
     }
 
-    private KeywordLog makeLog(String kwId, String kwName, int count) {
+    private KeywordLog makeLog(Integer kwId, String kwName, int count) {
         NewsKeyword kw  = makeKeyword(kwId, kwName);
         KeywordLog  log = new KeywordLog();
         ReflectionTestUtils.setField(log, "keyword",      kw);

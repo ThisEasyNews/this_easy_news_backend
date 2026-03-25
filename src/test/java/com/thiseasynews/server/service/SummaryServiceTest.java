@@ -16,7 +16,6 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -37,7 +36,7 @@ class SummaryServiceTest {
     void getTodayBriefing_success() {
         NewsSummary briefing = makeBriefing(1L, LocalDate.now(), List.of());
         given(newsSummaryRepository.findBriefingByTargetDate(LocalDate.now()))
-                .willReturn(Optional.of(briefing));
+                .willReturn(List.of(briefing));
 
         BriefingResponse result = summaryService.getTodayBriefing();
 
@@ -49,7 +48,7 @@ class SummaryServiceTest {
     @DisplayName("오늘 브리핑 미준비 시 BRIEFING_NOT_READY 예외")
     void getTodayBriefing_notReady() {
         given(newsSummaryRepository.findBriefingByTargetDate(any()))
-                .willReturn(Optional.empty());
+                .willReturn(List.of());
 
         assertThatThrownBy(() -> summaryService.getTodayBriefing())
                 .isInstanceOf(BusinessException.class)
@@ -63,7 +62,7 @@ class SummaryServiceTest {
     void getBriefingByDate_pastNotFound() {
         LocalDate past = LocalDate.now().minusDays(3);
         given(newsSummaryRepository.findBriefingByTargetDate(past))
-                .willReturn(Optional.empty());
+                .willReturn(List.of());
 
         assertThatThrownBy(() -> summaryService.getBriefingByDate(past))
                 .isInstanceOf(BusinessException.class)
@@ -79,21 +78,21 @@ class SummaryServiceTest {
         NewsSummary briefing = makeBriefing(1L, LocalDate.now(), List.of(child));
 
         given(newsSummaryRepository.findBriefingDetailById(1L))
-                .willReturn(Optional.of(briefing));
+                .willReturn(List.of(briefing));
         willDoNothing().given(newsSummaryRepository).incrementViewCount(1L);
 
         BriefingResponse result = summaryService.getBriefingDetail(1L);
 
         assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getIncludedSummaries()).hasSize(1);
-        assertThat(result.getIncludedSummaries().get(0).getId()).isEqualTo(2L);
+        assertThat(result.getSummaries()).hasSize(1);
+        assertThat(result.getSummaries().get(0).getId()).isEqualTo(2L);
     }
 
     @Test
     @DisplayName("존재하지 않는 브리핑 상세 조회 시 BRIEFING_NOT_FOUND 예외")
     void getBriefingDetail_notFound() {
         given(newsSummaryRepository.findBriefingDetailById(anyLong()))
-                .willReturn(Optional.empty());
+                .willReturn(List.of());
 
         assertThatThrownBy(() -> summaryService.getBriefingDetail(999L))
                 .isInstanceOf(BusinessException.class)
