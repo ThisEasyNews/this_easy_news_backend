@@ -56,8 +56,8 @@ src/main/java/com/thiseasynews/
 | 언론사별 기사 | GET | `/api/news/media/{mediaId}` | - |
 | 카테고리별 기사 | GET | `/api/news/category/{categoryId}` | - |
 | 복합 검색 | GET | `/api/news/search?mediaId=&categoryId=&keywordId=` | - |
-| 오늘 브리핑 | GET | `/api/summaries/briefings/today` | Redis 30분 |
-| 날짜별 브리핑 | GET | `/api/summaries/briefings/date/{date}` | - |
+| 오늘 브리핑 목록 | GET | `/api/summaries/briefings/today` | Redis 30분 |
+| 날짜별 브리핑 목록 | GET | `/api/summaries/briefings/date/{date}` | - |
 | 브리핑 상세 | GET | `/api/summaries/briefings/{id}` | Redis 30분 |
 | 핫 키워드 | GET | `/api/keywords/hot` | Redis 10분 |
 | 날짜별 키워드 | GET | `/api/keywords/hot/date/{date}` | - |
@@ -91,8 +91,11 @@ Page<Article> result = articleRepository.findAll(spec, pageable);
 ## 💾 응답 포맷
 
 ```json
-// 성공
+// 성공 (단일)
 { "success": true, "message": "success", "data": { ... } }
+
+// 성공 (리스트 - briefings/today, briefings/date/{date}, keywords/hot 등)
+{ "success": true, "message": "success", "data": [ { ... }, { ... } ] }
 
 // 에러
 { "success": false, "error": { "code": "A001", "message": "기사를 찾을 수 없습니다." } }

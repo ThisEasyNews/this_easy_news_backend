@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Tag(name = "3분 브리핑", description = "뉴스 요약 및 3분 브리핑 조회 API")
 @RestController
@@ -27,7 +28,7 @@ public class SummaryController {
             description = "오늘 날짜 기준 브리핑을 반환합니다. Redis 캐시(30분) 적용."
     )
     @GetMapping("/briefings/today")
-    public ResponseEntity<ApiResponse<BriefingResponse>> getTodayBriefing() {
+    public ResponseEntity<ApiResponse<List<BriefingResponse>>> getTodayBriefing() {
         return ResponseEntity.ok(ApiResponse.ok(summaryService.getTodayBriefing()));
     }
 
@@ -37,7 +38,7 @@ public class SummaryController {
             description = "특정 날짜의 브리핑을 조회합니다. (예: 2024-05-20)"
     )
     @GetMapping("/briefings/date/{date}")
-    public ResponseEntity<ApiResponse<BriefingResponse>> getBriefingByDate(
+    public ResponseEntity<ApiResponse<List<BriefingResponse>>> getBriefingByDate(
             @Parameter(description = "조회 날짜 (yyyy-MM-dd)", example = "2024-05-20")
             @PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(ApiResponse.ok(summaryService.getBriefingByDate(date)));

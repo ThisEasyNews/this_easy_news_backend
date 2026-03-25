@@ -32,16 +32,17 @@ class SummaryServiceTest {
 
     // ── getTodayBriefing ────────────────────────────
     @Test
-    @DisplayName("오늘 브리핑 존재 시 BriefingResponse 반환")
+    @DisplayName("오늘 브리핑 존재 시 BriefingResponse 리스트 반환")
     void getTodayBriefing_success() {
         NewsSummary briefing = makeBriefing(1L, LocalDate.now(), List.of());
         given(newsSummaryRepository.findBriefingByTargetDate(LocalDate.now()))
                 .willReturn(List.of(briefing));
 
-        BriefingResponse result = summaryService.getTodayBriefing();
+        List<BriefingResponse> result = summaryService.getTodayBriefing();
 
-        assertThat(result.getId()).isEqualTo(1L);
-        assertThat(result.getTitle()).isEqualTo("오늘의 브리핑");
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(1L);
+        assertThat(result.get(0).getTitle()).isEqualTo("오늘의 브리핑");
     }
 
     @Test

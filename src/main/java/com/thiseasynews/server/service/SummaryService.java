@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -25,23 +26,25 @@ public class SummaryService {
 
     // ── 오늘의 브리핑 ─────────────────────────────────
     @Cacheable(value = RedisConfig.CACHE_TODAY_BRIEFING, key = "'today'")
-    public BriefingResponse getTodayBriefing() {
+    public List<BriefingResponse> getTodayBriefing() {
         LocalDate today = LocalDate.now();
-        NewsSummary briefing = newsSummaryRepository.findBriefingByTargetDate(today)
-                .stream().findFirst()
-                .orElseThrow(() -> new BusinessException(ErrorCode.BRIEFING_NOT_READY));
-        return BriefingResponse.from(briefing);
+        List<NewsSummary> briefings = newsSummaryRepository.findBriefingByTargetDate(today);
+        if (briefings.isEmpty()) {
+            throw new BusinessException(ErrorCode.BRIEFING_NOT_READY);
+        }
+        return briefings.stream().map(BriefingResponse::from).toList();
     }
 
     // ── 날짜별 브리핑 ─────────────────────────────────
-    public BriefingResponse getBriefingByDate(LocalDate date) {
-        NewsSummary briefing = newsSummaryRepository.findBriefingByTargetDate(date)
-                .stream().findFirst()
-                .orElseThrow(() -> new BusinessException(
-                        date.equals(LocalDate.now())
-                                ? ErrorCode.BRIEFING_NOT_READY
-                                : ErrorCode.BRIEFING_NOT_FOUND));
-        return BriefingResponse.from(briefing);
+    public List<BriefingResponse> getBriefingByDate(LocalDate date) {
+        List<NewsSummary> briefings = newsSummaryRepository.findBriefingByTargetDate(date);
+        if (briefings.isEmpty()) {
+            throw new BusinessException(
+                    date.equals(LocalDate.now())
+                            ? ErrorCode.BRIEFING_NOT_READY
+                            : ErrorCode.BRIEFING_NOT_FOUND);
+        }
+        return briefings.stream().map(BriefingResponse::from).toList();
     }
 
     // ── 브리핑 상세 ───────────────────────────────────

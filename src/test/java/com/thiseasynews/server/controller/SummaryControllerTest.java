@@ -39,13 +39,13 @@ class SummaryControllerTest {
                 .summaries(List.of())
                 .build();
 
-        given(summaryService.getTodayBriefing()).willReturn(response);
+        given(summaryService.getTodayBriefing()).willReturn(List.of(response));
 
         mockMvc.perform(get("/api/summaries/briefings/today"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true))
-                .andExpect(jsonPath("$.data.id").value(1))
-                .andExpect(jsonPath("$.data.title").value("오늘의 3분 브리핑"));
+                .andExpect(jsonPath("$.data[0].id").value(1))
+                .andExpect(jsonPath("$.data[0].title").value("오늘의 3분 브리핑"));
     }
 
     @Test
@@ -101,10 +101,10 @@ class SummaryControllerTest {
                 .summaries(List.of())
                 .build();
 
-        given(summaryService.getBriefingByDate(LocalDate.of(2024, 5, 20))).willReturn(response);
+        given(summaryService.getBriefingByDate(LocalDate.of(2024, 5, 20))).willReturn(List.of(response));
 
         mockMvc.perform(get("/api/summaries/briefings/date/2024-05-20"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(2));
+                .andExpect(jsonPath("$.data[0].id").value(2));
     }
 }
