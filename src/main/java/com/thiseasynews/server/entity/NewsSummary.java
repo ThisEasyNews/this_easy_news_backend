@@ -64,6 +64,10 @@ public class NewsSummary extends BaseTimeEntity {
     @OneToMany(mappedBy = "briefing", fetch = FetchType.LAZY)
     private List<BriefingSummary> includedSummaries = new ArrayList<>();
 
+    /** 이 요약을 참조하는 기사들 (article.summary_id → news_summary.id) */
+    @OneToMany(mappedBy = "summary", fetch = FetchType.LAZY)
+    private List<Article> articles = new ArrayList<>();
+
     /** 이 요약에 매핑된 키워드들 */
     @OneToMany(mappedBy = "summary", fetch = FetchType.LAZY)
     private List<SummaryKeyword> summaryKeywords = new ArrayList<>();

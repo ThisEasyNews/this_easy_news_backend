@@ -54,6 +54,9 @@ public class BriefingResponse {
         @Schema(description = "요약 ID")
         private Long id;
 
+        @Schema(description = "원본 기사 ID")
+        private Long articleId;
+
         @Schema(description = "뉴스 제목")
         private String title;
 
@@ -64,8 +67,10 @@ public class BriefingResponse {
         private String topImageUrl;
 
         public static BriefingSummaryItem from(NewsSummary ns) {
+            Long articleId = ns.getArticles().isEmpty() ? null : ns.getArticles().get(0).getId();
             return BriefingSummaryItem.builder()
                     .id(ns.getId())
+                    .articleId(articleId)
                     .title(ns.getTitle())
                     .summaryContent(ns.getSummaryContent())
                     .topImageUrl(ns.getTopImageUrl())
