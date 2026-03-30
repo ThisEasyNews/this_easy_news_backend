@@ -54,6 +54,9 @@ public class NewsResponse {
     @Schema(description = "대표 이미지 URL")
     private String imageUrl;
 
+    @Schema(description = "인사이트")
+    private String insight;
+
     // ── 목록용 (본문 제외) ────────────────────────────
     public static NewsResponse ofList(Article article) {
         return NewsResponse.builder()
@@ -83,11 +86,20 @@ public class NewsResponse {
                 .imageUrl(article.getImageUrl())
                 .publishedAt(article.getPublishedAt())
                 .url(article.getUrl())
-                .mediaId(article.getMedia()       != null ? article.getMedia().getId()           : null)
-                .mediaName(article.getMedia()     != null ? article.getMedia().getName()         : null)
-                .categoryId(article.getCategory() != null ? article.getCategory().getId()       : null)
-                .categoryName(article.getCategory() != null ? article.getCategory().getName()   : null)
-                .summary(article.getSummary()     != null ? article.getSummary().getSummaryContent() : null)
+                .mediaId(article.getMedia() != null ? article.getMedia().getId() : null)
+                .mediaName(article.getMedia() != null ? article.getMedia().getName() : null)
+                .categoryId(article.getCategory() != null ? article.getCategory().getId() : null)
+                .categoryName(article.getCategory() != null ? article.getCategory().getName() : null)
+                .summary(
+                    article.getSummary() != null
+                        ? article.getSummary().getSummaryContent()
+                        : null
+                )
+                .insight(
+                    article.getSummary() != null
+                        ? article.getSummary().getInsight()
+                        : null
+                ) // ⭐ 추가된 부분
                 .build();
     }
 }
