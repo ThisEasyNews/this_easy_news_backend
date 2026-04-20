@@ -28,23 +28,23 @@ public class SummaryService {
     @Cacheable(value = RedisConfig.CACHE_TODAY_BRIEFING, key = "'today'")
     public List<BriefingResponse> getTodayBriefing() {
         LocalDate today = LocalDate.now();
-        List<NewsSummary> briefings = newsSummaryRepository.findBriefingByTargetDate(today);
+        List<NewsSummary> briefings = newsSummaryRepository.findBriefingByTargetDateOrderByCreatedAtDesc(today);
         if (briefings.isEmpty()) {
             throw new BusinessException(ErrorCode.BRIEFING_NOT_READY);
         }
-        return briefings.stream().map(BriefingResponse::from).toList();
+        return briefings.stream().limit(10).map(BriefingResponse::from).toList();
     }
 
     // ── 날짜별 브리핑 ─────────────────────────────────
     public List<BriefingResponse> getBriefingByDate(LocalDate date) {
-        List<NewsSummary> briefings = newsSummaryRepository.findBriefingByTargetDate(date);
+        List<NewsSummary> briefings = newsSummaryRepository.findBriefingByTargetDateOrderByCreatedAtDesc(date);
         if (briefings.isEmpty()) {
             throw new BusinessException(
                     date.equals(LocalDate.now())
                             ? ErrorCode.BRIEFING_NOT_READY
                             : ErrorCode.BRIEFING_NOT_FOUND);
         }
-        return briefings.stream().map(BriefingResponse::from).toList();
+        return briefings.stream().limit(10).map(BriefingResponse::from).toList();
     }
 
     // ── 브리핑 상세 ───────────────────────────────────
