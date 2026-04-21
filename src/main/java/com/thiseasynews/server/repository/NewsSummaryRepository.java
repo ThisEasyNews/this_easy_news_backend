@@ -22,8 +22,9 @@ public interface NewsSummaryRepository extends JpaRepository<NewsSummary, Long> 
            "LEFT JOIN FETCH bs.summary " +
            "WHERE ns.summaryType = 'BRIEFING' " +
            "AND ns.targetDate = :targetDate " +
-           "AND ns.statusCode = 'PUBLISHED'")
-    List<NewsSummary> findBriefingByTargetDate(@Param("targetDate") LocalDate targetDate);
+           "AND ns.statusCode = 'PUBLISHED'"+
+            "ORDER BY ns.createdAt DESC")
+    List<NewsSummary> findBriefingByTargetDateOrderByCreatedAtDesc(@Param("targetDate") LocalDate targetDate);
 
     /**
      * 브리핑 상세 조회 (id 기준) - 동일 이유로 includedSummaries + summary 만 fetch
