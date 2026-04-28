@@ -38,7 +38,7 @@ spring:
           min-idle: 2
 
   config:
-    import: classpath:application-secret.yml
+    import: optional:classpath:application-secret.yml
 
   security:
     oauth2:
